@@ -1,5 +1,5 @@
 # Password-Manager-GUI-App
-The Password Manager is a secure application designed to store passwords locally in the format website | email | password. It features automatic checks for empty fields and duplicates, generates complex passwords, and copies them to the clipboard for user convenience.
+The Password Manager is a secure application designed to store passwords locally in the format "website | email | password". It features automatic checks for empty fields and duplicates, generates complex passwords, and copies them to the clipboard for user convenience.
 
 ## Overview
 
