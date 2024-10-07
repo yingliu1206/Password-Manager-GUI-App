@@ -53,7 +53,7 @@ def save():
         new_data = f"{website} | {email} | {password}\n"
         for index, line in enumerate(saved_data):
             saved_website = line.split(" | ")[0]
-            if saved_website == website:
+            if saved_website.lower() == website.lower():
                 # Ask the user if they want to overwrite the existing password
                 overwrite = messagebox.askyesno(title='Duplicate Entry',
                                                 message=f'You already have a password saved for {website}. Do you want to overwrite it?')
