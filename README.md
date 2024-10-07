@@ -1,5 +1,5 @@
 # Password-Manager-GUI-App
-The Password Manager is a secure application designed to store passwords locally in the format "website | email | password". It features automatic checks for empty fields and duplicates, generates complex passwords, and copies them to the clipboard for user convenience.
+The Password Manager is a secure application designed to store passwords locally in JSON format. It generates complex passwords, copies them to the clipboard for user convenience, allows users to search existing passwords, and includes automatic checks for empty fields and duplicates.
 
 ## Overview
 
@@ -18,6 +18,7 @@ This program utilizes the Python modules Tkinter and Pyperclip to create a user-
 * Password Generation: Generates complex passwords for enhanced security.
 * Clipboard Functionality: Copies generated passwords to the clipboard automatically.
 * Defaulted Email: Displays a default email on the front-end to streamline the input process.
+* Search Function: Allows you to search existing passwords saved in the JSON file.
 
 ## How to Use
 
@@ -31,13 +32,13 @@ This program utilizes the Python modules Tkinter and Pyperclip to create a user-
    python main.py
 
 ### Interface
-<img width="563" alt="Screenshot 2024-10-05 at 8 58 46 PM" src="https://github.com/user-attachments/assets/4d536078-788b-4da3-9011-1d2e99feb540">
-
+![application interface.png](application%20interface.png)
 
 ## Instructions
 * Generate Password: Click the "Generate Password" button to create a new password.
 * Save Password: Fill in the website and email (defaulted), then click "Add" to save your password.
 * Copy Password: The generated password will be automatically copied to your clipboard.
+* Search Password: Enter the website and click the "Search" button. If there is an existing password associated with the website, it will pop up in a new window. If not, you will be notified.
 
 ## Acknowledgments
 - [100 Days of Code: The Complete Python Pro Bootcamp - Udemy](https://www.udemy.com/course/100-days-of-code) for the inspiration and guidance.
