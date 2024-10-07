@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
 import pyperclip
+import json
 
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
@@ -34,47 +35,70 @@ def pwd_generate():
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
-    website = website_entry.get()
+    website = website_entry.get().lower()  # Convert the website to lowercase
     email = email_entry.get()
     password = password_entry.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
     # check empty strings
-    if len(website) == 0 or len(password)==0:
-        messagebox.showerror(title = 'Oops', message="Please don't leave any fields empty!")
+    if len(website) == 0 or len(password) == 0:
+        messagebox.showerror(title='Oops', message="Please don't leave any fields empty!")
     else:
         try:
-            # Read the existing passwords from the file
-            with open('password.txt', 'r') as pwd_file:
-                saved_data = pwd_file.readlines()
+            # Read the existing passwords from the JSON file
+            with open('password.json', 'r') as pwd_file:
+                saved_data = json.load(pwd_file)
         except FileNotFoundError:
-            saved_data = []
+            saved_data = {}
 
-        # Check if the website already exists
-        new_data = f"{website} | {email} | {password}\n"
-        for index, line in enumerate(saved_data):
-            saved_website = line.split(" | ")[0]
-            if saved_website.lower() == website.lower():
-                # Ask the user if they want to overwrite the existing password
-                overwrite = messagebox.askyesno(title='Duplicate Entry',
-                                                message=f'You already have a password saved for {website}. Do you want to overwrite it?')
-                if overwrite:
-                    # Overwrite the existing entry by replacing the old one with the new entry
-                    saved_data[index] = new_data
-                    with open('password.txt', 'w') as pwd_file:
-                        pwd_file.writelines(saved_data)
-                    messagebox.showinfo(title='Success', message='Password overwritten successfully!')
-                    website_entry.delete(0, END)
-                    password_entry.delete(0, END)
-                return
+        # Check if the website already exists (case-insensitive)
+        if website in saved_data:
+            # Ask the user if they want to overwrite the existing password
+            overwrite = messagebox.askyesno(title='Duplicate Entry',
+                                            message=f'You already have a password saved for {website}. Do you want to overwrite it?')
+            if overwrite:
+                # Overwrite the existing entry
+                saved_data.update(new_data)
+                with open('password.json', 'w') as pwd_file:
+                    json.dump(saved_data, pwd_file, indent=4)
+                messagebox.showinfo(title='Success', message='Password overwritten successfully!')
+                website_entry.delete(0, END)
+                password_entry.delete(0, END)
+        else:
+            # If no duplicate is found, confirm and save the new password
+            is_ok = messagebox.askokcancel(title=website, message=f'These are the details entered:\n'
+                                                                  f'Email: {email}\n'
+                                                                  f"Password: {password}\n Is it ok to save?")
+            if is_ok:
+                saved_data.update(new_data)
+                with open('password.json', 'w') as pwd_file:
+                    json.dump(saved_data, pwd_file, indent=4)
+                website_entry.delete(0, END)
+                password_entry.delete(0, END)
 
-        # If no duplicate is found, confirm and save the new password
-        is_ok = messagebox.askokcancel(title=website, message=f'These are the details entered: \nEmail: {email}'
-                                                              f"\nPassword: {password} \n Is it ok to save?")
-        if is_ok:
-            with open('password.txt', 'a') as pwd_file:
-                pwd_file.write(new_data)
-            website_entry.delete(0, END)
-            password_entry.delete(0, END)
+# ---------------------------- SEARCH PASSWORD ------------------------------- #
+def search():
+    website = website_entry.get().lower()
+    try:
+        # Read the existing passwords from the JSON file
+        with open('password.json', 'r') as pwd_file:
+            saved_data = json.load(pwd_file)
+    except FileNotFoundError:
+        messagebox.showerror(title='Error', message="No Data File Found.")
+    else:
+        if website in saved_data:
+            email = saved_data[website]['email']
+            password = saved_data[website]['password']
+            messagebox.showinfo(title=website, message=f'These are the details entered: \n'
+                                                       f'Email: {email}\n'
+                                                       f"Password: {password}")
+        else:
+            messagebox.showerror(title='Error', message="No Details for the website exists.")
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -105,8 +129,8 @@ copied_label = Label(text="", fg="green", bg=YELLOW)  # This label will show the
 copied_label.grid(column=1, row=5, columnspan=2)
 
 #create entries
-website_entry = Entry(width=38, bg=YELLOW, fg='black', highlightbackground=YELLOW, insertbackground="black")
-website_entry.grid(column=1,row=1, columnspan=2)
+website_entry = Entry(width=21, bg=YELLOW, fg='black', highlightbackground=YELLOW, insertbackground="black")
+website_entry.grid(column=1,row=1)
 email_entry = Entry(width=38, bg=YELLOW, fg='black', highlightbackground=YELLOW, insertbackground="black")
 email_entry.grid(column=1,row=2, columnspan=2)
 email_entry.insert(0, "ying.liu0331@gmail.com")
@@ -119,5 +143,8 @@ button_pwd_generate.grid(column=2,row=3)
 
 button_add = Button(text="Add", command=save, width=36, highlightbackground=YELLOW)
 button_add.grid(column=1,row=4,columnspan = 2)
+
+button_search = Button(text="Search", command=search, width = 13, highlightbackground=YELLOW)
+button_search.grid(column=2,row=1)
 
 window.mainloop()
